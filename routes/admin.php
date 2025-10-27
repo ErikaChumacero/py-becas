@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\ConvocatoriaController;
 use App\Http\Controllers\CarreraController;
@@ -9,11 +10,17 @@ use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\HistorialEstadoController;
 use App\Http\Controllers\TipoBecaController;
 use App\Http\Controllers\RequisitoController;
+use App\Http\Controllers\AdminPerfilController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
+Route::get('/', [DashboardController::class, 'admin'])->name('dashboard');
+
+// Perfil del Administrador
+Route::prefix('perfil')->group(function () {
+    Route::get('index', [AdminPerfilController::class, 'index'])->name('perfil.index');
+    Route::put('correo', [AdminPerfilController::class, 'updateCorreo'])->name('perfil.correo');
+    Route::put('password', [AdminPerfilController::class, 'updatePassword'])->name('perfil.password');
+});
 
 
 // Persona

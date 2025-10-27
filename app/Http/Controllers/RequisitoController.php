@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class RequisitoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rows = DB::select(<<<SQL
+        $idtipobeca = $request->query('idtipobeca', 'todos'); // 'todos' o ID del tipo de beca
+        
+        $query = <<<SQL
             SELECT r.idrequisito,
                    r.descripcion,
                    r.obligatorio,
@@ -17,9 +19,22 @@ class RequisitoController extends Controller
                    t.nombre AS tipobeca
             FROM REQUISITO r
             INNER JOIN TIPOBECA t ON t.idtipobeca = r.idtipobeca
-            ORDER BY r.idrequisito DESC
-        SQL);
-        return view('admin.requisito.index', compact('rows'));
+        SQL;
+        
+        // Aplicar filtro si se seleccionó un tipo de beca específico
+        if ($idtipobeca !== 'todos') {
+            $query .= " WHERE r.idtipobeca = " . intval($idtipobeca);
+        }
+        
+        // Ordenar por tipo de beca y luego por obligatorio (primero los obligatorios)
+        $query .= " ORDER BY t.nombre, r.obligatorio DESC, r.descripcion";
+        
+        $rows = DB::select($query);
+        
+        // Obtener todos los tipos de beca para el filtro
+        $tiposbeca = DB::select('SELECT idtipobeca, nombre FROM TIPOBECA ORDER BY nombre');
+        
+        return view('admin.requisito.index', compact('rows', 'tiposbeca', 'idtipobeca'));
     }
 
     public function create()
@@ -36,11 +51,8 @@ class RequisitoController extends Controller
             'idtipobeca' => 'required|integer',
         ]);
 
-        $next = DB::selectOne('SELECT ISNULL(MAX(idrequisito),0)+1 AS nextid FROM REQUISITO');
-        $id = $next ? $next->nextid : 1;
-
-        DB::statement('EXEC sp_InsertarRequisito ?, ?, ?, ?', [
-            $id,
+        // sp_InsertarRequisito espera 3 parámetros (sin ID, es IDENTITY)
+        DB::statement('EXEC sp_InsertarRequisito ?, ?, ?', [
             $data['descripcion'],
             $data['obligatorio'],
             $data['idtipobeca'],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ErrorHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -46,7 +47,7 @@ class ConvocatoriaController extends Controller
                 $data['idtipobeca'],
             ]);
         } catch (\Throwable $e) {
-            return back()->withErrors(['general' => $e->getMessage()])->withInput();
+            return back()->withErrors(['general' => ErrorHelper::cleanSqlError($e->getMessage())])->withInput();
         }
 
         return redirect()->route('admin.convocatoria.index')->with('status', 'Convocatoria creada correctamente');
@@ -89,7 +90,7 @@ class ConvocatoriaController extends Controller
                 $id,
             ]);
         } catch (\Throwable $e) {
-            return back()->withErrors(['general' => $e->getMessage()])->withInput();
+            return back()->withErrors(['general' => ErrorHelper::cleanSqlError($e->getMessage())])->withInput();
         }
 
         return redirect()->route('admin.convocatoria.index')->with('status', 'Convocatoria actualizada');

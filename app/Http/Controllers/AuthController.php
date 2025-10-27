@@ -24,7 +24,7 @@ class AuthController extends Controller
         ]);
 
         // Autenticación contra tabla PERSONA (columna 'contrasena')
-        // SQL Server: usar TOP 1 en lugar de LIMIT 1
+        // 
         $row = DB::selectOne('SELECT TOP 1 ci, nombre, apellido, correo, contrasena AS password, tipou, tipoa, tipoe FROM PERSONA WHERE correo = ?', [
             $validated['correo'],
         ]);
@@ -33,7 +33,7 @@ class AuthController extends Controller
             return back()->withErrors(['correo' => 'Credenciales inválidas'])->withInput();
         }
 
-        // Comparación directa (según datos de ejemplo en SQL, sin hash)
+        // Comparación directa (Todos los datos son usados de sql server )
         if ($row->password !== $validated['contrasena']) {
             return back()->withErrors(['contrasena' => 'Credenciales inválidas'])->withInput();
         }

@@ -34,12 +34,28 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-gray-700">Estado Anterior</label>
-                    <input type="text" name="estadoanterior" value="{{ old('estadoanterior', $row->estadoanterior) }}" class="mt-1 block w-full p-2 border rounded" required>
+                    <label class="block text-gray-700 font-medium">Estado Anterior (Solo lectura)</label>
+                    @php
+                        $estadosNombres = [
+                            '1' => 'Pendiente',
+                            '2' => 'En Revisión',
+                            '3' => 'Aprobado',
+                            '4' => 'Rechazado'
+                        ];
+                        $nombreEstadoAnterior = $estadosNombres[$row->estadoanterior] ?? $row->estadoanterior;
+                    @endphp
+                    <input type="text" class="mt-1 block w-full p-2 border border-gray-300 rounded bg-gray-100" readonly value="{{ $nombreEstadoAnterior }}">
+                    <input type="hidden" name="estadoanterior" value="{{ $row->estadoanterior }}">
                 </div>
                 <div>
-                    <label class="block text-gray-700">Estado Nuevo</label>
-                    <input type="text" name="estadonuevo" value="{{ old('estadonuevo', $row->estadonuevo) }}" class="mt-1 block w-full p-2 border rounded" required>
+                    <label class="block text-gray-700 font-medium">Estado Nuevo</label>
+                    <select name="estadonuevo" class="mt-1 block w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">Seleccione...</option>
+                        <option value="1" {{ old('estadonuevo', $row->estadonuevo) == '1' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="2" {{ old('estadonuevo', $row->estadonuevo) == '2' ? 'selected' : '' }}>En Revisión</option>
+                        <option value="3" {{ old('estadonuevo', $row->estadonuevo) == '3' ? 'selected' : '' }}>Aprobado</option>
+                        <option value="4" {{ old('estadonuevo', $row->estadonuevo) == '4' ? 'selected' : '' }}>Rechazado</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-gray-700">Fecha de cambio</label>

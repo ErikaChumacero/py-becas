@@ -56,11 +56,21 @@ class DocumentoController extends Controller
             'idpostulacion' => 'required|integer',
             'idrequisito' => 'required|integer',
         ]);
+
+        // Verificar que no exista ya un documento para este requisito en esta postulación
+        $existente = DB::selectOne(
+            'SELECT iddocumento FROM DOCUMENTO WHERE idpostulacion = ? AND idrequisito = ?',
+            [$data['idpostulacion'], $data['idrequisito']]
+        );
+        if ($existente) {
+            return back()->withErrors(['general' => 'Ya existe un documento para este requisito en esta postulación.'])->withInput();
+        }
+
         // Subir archivo al DISCO 'public' y obtener URL pública /storage/...
         $storedPath = $request->file('archivo')->store('documentos', 'public'); // documentos/archivo.pdf
         $publicUrl = Storage::disk('public')->url($storedPath); // /storage/documentos/archivo.pdf
 
-        // Firma real del SP en BD: sin iddocumento (identity). Enviar 6 parámetros.
+        // Firma real del SP en BD: sin iddocumento (identity). Enviar 5 parámetros.
         DB::statement('EXEC sp_InsertarDocumento ?, ?, ?, ?, ?', [
             $data['tipodocumento'],
             $publicUrl,
@@ -100,17 +110,14 @@ class DocumentoController extends Controller
         // Obtener actuales para conservar si no hay archivo nuevo
         $current = DB::selectOne('SELECT rutaarchivo FROM DOCUMENTO WHERE iddocumento = ?', [$id]);
         $rutaarchivo = $current ? $current->rutaarchivo : '';
-        $nombrearchivo = $current ? basename($rutaarchivo) : 'documento.pdf';
         if ($request->hasFile('archivo')) {
             $storedPath = $request->file('archivo')->store('documentos', 'public');
             $rutaarchivo = Storage::disk('public')->url($storedPath);
-            $nombrearchivo = $request->file('archivo')->getClientOriginalName();
         }
 
-        DB::statement('EXEC sp_ActualizarDocumento ?, ?, ?, ?, ?, ?, ?', [
+        DB::statement('EXEC sp_ActualizarDocumento ?, ?, ?, ?, ?, ?', [
             $id,
             $data['tipodocumento'],
-            $nombrearchivo,
             $rutaarchivo,
             $data['validado'],
             $data['idpostulacion'],

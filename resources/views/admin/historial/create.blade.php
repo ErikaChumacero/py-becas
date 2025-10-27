@@ -36,14 +36,52 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-gray-700">Estado Anterior</label>
-                    <input type="text" name="estadoanterior" value="{{ old('estadoanterior') }}" class="mt-1 block w-full p-2 border rounded" required>
+                    <label class="block text-gray-700 font-medium">Estado Anterior (Automático)</label>
+                    <input type="text" id="estadoanterior_display" class="mt-1 block w-full p-2 border border-gray-300 rounded bg-gray-100" readonly value="Se mostrará al seleccionar postulación">
+                    <input type="hidden" name="estadoanterior" id="estadoanterior" value="{{ old('estadoanterior') }}">
                 </div>
                 <div>
-                    <label class="block text-gray-700">Estado Nuevo</label>
-                    <input type="text" name="estadonuevo" value="{{ old('estadonuevo') }}" class="mt-1 block w-full p-2 border rounded" required>
+                    <label class="block text-gray-700 font-medium">Estado Nuevo</label>
+                    <select name="estadonuevo" class="mt-1 block w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">Seleccione...</option>
+                        <option value="1" {{ old('estadonuevo') == '1' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="2" {{ old('estadonuevo') == '2' ? 'selected' : '' }}>En Revisión</option>
+                        <option value="3" {{ old('estadonuevo') == '3' ? 'selected' : '' }}>Aprobado</option>
+                        <option value="4" {{ old('estadonuevo') == '4' ? 'selected' : '' }}>Rechazado</option>
+                    </select>
                 </div>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const postulacionSelect = document.querySelector('select[name="idpostulacion"]');
+                    const estadoAnteriorDisplay = document.getElementById('estadoanterior_display');
+                    const estadoAnteriorHidden = document.getElementById('estadoanterior');
+                    
+                    const estadosNombres = {
+                        '1': 'Pendiente',
+                        '2': 'En Revisión',
+                        '3': 'Aprobado',
+                        '4': 'Rechazado'
+                    };
+                    
+                    postulacionSelect.addEventListener('change', function() {
+                        const selectedOption = this.options[this.selectedIndex];
+                        if (selectedOption.value) {
+                            const texto = selectedOption.text;
+                            const match = texto.match(/Estado actual: (\d+)/);
+                            if (match) {
+                                const estadoActual = match[1];
+                                estadoAnteriorHidden.value = estadoActual;
+                                estadoAnteriorDisplay.value = estadosNombres[estadoActual] || estadoActual;
+                            }
+                        } else {
+                            estadoAnteriorHidden.value = '';
+                            estadoAnteriorDisplay.value = 'Se mostrará al seleccionar postulación';
+                        }
+                    });
+                });
+            </script>
 
             <div class="flex items-center gap-2">
                 <a href="{{ route('admin.historial.index') }}" class="px-3 py-2 bg-gray-200 rounded">Cancelar</a>

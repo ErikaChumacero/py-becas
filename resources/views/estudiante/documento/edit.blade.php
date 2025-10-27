@@ -93,12 +93,5 @@
                 if (selPost.value) cargarRequisitos(selPost.value);
             });
         </script>
-
-        <div class="mt-6">
-            <form action="{{ route('estudiante.documento.disable', $row->iddocumento) }}" method="POST" onsubmit="return confirm('¿Deshabilitar este documento?');">
-                @csrf
-                <button class="px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded">Deshabilitar documento</button>
-            </form>
-        </div>
     </div>
 </x-student-layout>

@@ -59,7 +59,7 @@ class TipoBecaController extends Controller
 
     public function disable(int $id)
     {
-        // No hay campo estado; intentamos eliminación física si no está referenciado
+        // 
         $refs = DB::selectOne('SELECT (
             SELECT COUNT(*) FROM CONVOCATORIA WHERE idtipobeca = ?
         ) + (

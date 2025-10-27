@@ -1,81 +1,211 @@
 @php
     $modules = [
-        [
-            'title' => 'Mis Postulaciones',
-            'items' => [
-                [ 'name' => 'Formulario', 'icon' => 'fa-regular fa-file-circle-plus', 'route' => 'estudiante.postulacion.create', 'active' => request()->routeIs('estudiante.postulacion.create') ],
-                [ 'name' => 'Listado', 'icon' => 'fa-regular fa-list', 'route' => 'estudiante.postulacion.index', 'active' => request()->routeIs('estudiante.postulacion.index') ],
-            ],
-        ],
-        [
-            'title' => 'Mis Documentos',
-            'items' => [
-                [ 'name' => 'Formulario', 'icon' => 'fa-regular fa-file', 'route' => 'estudiante.documento.create', 'active' => request()->routeIs('estudiante.documento.create') ],
-                [ 'name' => 'Listado', 'icon' => 'fa-regular fa-list', 'route' => 'estudiante.documento.index', 'active' => request()->routeIs('estudiante.documento.index') ],
-            ],
-        ],
-        [
-            'title' => 'Historial de Estados',
-            'items' => [
-                [ 'name' => 'Listado', 'icon' => 'fa-regular fa-clock', 'route' => 'estudiante.historial.index', 'active' => request()->routeIs('estudiante.historial.index') ],
-            ],
-        ],
-        [
-            'title' => 'Convocatorias',
-            'items' => [
-                [ 'name' => 'Listado', 'icon' => 'fa-regular fa-bell', 'route' => 'estudiante.convocatoria.index', 'active' => request()->routeIs('estudiante.convocatoria.index') ],
-            ],
-        ],
+        [ 'name' => 'Mis Postulaciones', 'icon' => 'fa-solid fa-file-signature', 'route' => 'estudiante.postulacion.index', 'active' => request()->routeIs('estudiante.postulacion.*') ],
+        [ 'name' => 'Mis Documentos', 'icon' => 'fa-solid fa-folder-open', 'route' => 'estudiante.documento.index', 'active' => request()->routeIs('estudiante.documento.*') ],
+        [ 'name' => 'Historial de Estados', 'icon' => 'fa-solid fa-clock-rotate-left', 'route' => 'estudiante.historial.index', 'active' => request()->routeIs('estudiante.historial.*') ],
+        [ 'name' => 'Convocatorias', 'icon' => 'fa-solid fa-bullhorn', 'route' => 'estudiante.convocatoria.index', 'active' => request()->routeIs('estudiante.convocatoria.*') ],
     ];
 @endphp
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    .steelblue-bg { background-color: #1f3a50; }
-    .steelblue-border { border-color: #173041; }
-    .steelblue-hover:hover { background-color: #173041; }
-    .steelblue-chip { background-color: rgba(31,58,80,0.6); border-color: #173041; }
-    .steelblue-active { background-color: #173041; }
-    .text-white-80 { color: rgba(255,255,255,0.8); }
-    .bg-white-10 { background-color: rgba(255,255,255,0.1); }
-    .bg-white-06 { background-color: rgba(255,255,255,0.06); }
-    .border-white-12 { border-color: rgba(255,255,255,0.12); }
-    .border-white-16 { border-color: rgba(255,255,255,0.16); }
-    .hover-bg-steel { transition: background-color .15s ease; }
+    /* Variables de color modernas */
+    :root {
+        --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        --sidebar-hover: rgba(59, 130, 246, 0.1);
+        --sidebar-active: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        --sidebar-border: rgba(148, 163, 184, 0.1);
+        --sidebar-text: #e2e8f0;
+        --sidebar-text-muted: #94a3b8;
+        --sidebar-icon: #60a5fa;
+    }
+    
+    /* Tipografía moderna */
+    .sidebar-font {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        letter-spacing: -0.01em;
+    }
+    
+    /* Fondo con gradiente */
+    .sidebar-gradient {
+        background: var(--sidebar-bg);
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Perfil de usuario mejorado */
+    .user-profile {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid var(--sidebar-border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+    
+    .user-profile:hover {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(148, 163, 184, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .user-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--sidebar-text);
+        margin-bottom: 4px;
+        letter-spacing: -0.02em;
+    }
+    
+    .user-email {
+        font-size: 0.75rem;
+        color: var(--sidebar-text-muted);
+        font-weight: 400;
+    }
+    
+    /* Botones del menú mejorados */
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 14px;
+        margin-bottom: 4px;
+        border-radius: 10px;
+        color: var(--sidebar-text);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .sidebar-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: var(--sidebar-icon);
+        transform: scaleY(0);
+        transition: transform 0.2s ease;
+    }
+    
+    .sidebar-item:hover {
+        background: var(--sidebar-hover);
+        color: #ffffff;
+        transform: translateX(4px);
+    }
+    
+    .sidebar-item:hover::before {
+        transform: scaleY(1);
+    }
+    
+    .sidebar-item.active {
+        background: var(--sidebar-active);
+        color: #ffffff;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .sidebar-item.active::before {
+        transform: scaleY(1);
+        background: #ffffff;
+    }
+    
+    /* Iconos mejorados */
+    .sidebar-icon {
+        width: 20px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        color: var(--sidebar-icon);
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .sidebar-item:hover .sidebar-icon,
+    .sidebar-item.active .sidebar-icon {
+        color: #ffffff;
+        transform: scale(1.1);
+    }
+    
+    /* Scrollbar personalizado */
+    .sidebar-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .sidebar-scroll::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.3);
+    }
+    
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.3);
+        border-radius: 3px;
+    }
+    
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.5);
+    }
+    
+    /* Separador sutil */
+    .sidebar-divider {
+        height: 1px;
+        background: var(--sidebar-border);
+        margin: 16px 0;
+    }
 </style>
 
 <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full steelblue-bg border-r steelblue-border sm:translate-x-0 text-white"
+    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full sidebar-gradient border-r border-slate-700/50 sm:translate-x-0 sidebar-font"
     aria-label="Sidebar">
-    <div class="h-full px-3 pb-4 overflow-y-auto steelblue-bg">
+    <div class="h-full px-4 pb-4 overflow-y-auto sidebar-scroll">
         @php($u = session('usuario'))
         @if($u)
-            <div class="mb-4 p-3 rounded steelblue-chip border steelblue-border">
-                <div class="text-sm font-semibold">{{ $u['nombre'] ?? '' }} {{ $u['apellido'] ?? '' }}</div>
-                <div class="text-xs text-white-80 truncate">{{ $u['correo'] ?? '' }}</div>
-            </div>
+            <a href="{{ route('estudiante.perfil.index') }}" class="user-profile block cursor-pointer group">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-500/20 rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-400/30 group-hover:border-blue-400/60 transition-all">
+                        <span class="text-lg font-bold text-blue-300">
+                            {{ strtoupper(substr($u['nombre'] ?? '', 0, 1)) }}{{ strtoupper(substr($u['apellido'] ?? '', 0, 1)) }}
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="user-name">{{ $u['nombre'] ?? '' }} {{ $u['apellido'] ?? '' }}</div>
+                        <div class="user-email truncate">{{ $u['correo'] ?? '' }}</div>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </a>
         @endif
-        <ul class="space-y-4 font-medium">
-            <li>
-                <a href="{{ route('estudiante.dashboard') }}" class="flex items-center p-2 text-white rounded-lg hover-bg-steel steelblue-hover {{ request()->routeIs('estudiante.dashboard') ? 'steelblue-active' : '' }}">
-                    <span class="w-5 h-5 inline-flex justify-center items-center "><i class="fa-solid fa-gauge-high text-white/80"></i></span>
-                    <span class="ms-3">Dashboard</span>
-                </a>
-            </li>
-            @foreach ($modules as $module)
+        
+        <nav>
+            <ul class="space-y-1">
                 <li>
-                    <div class="px-3 py-2 text-xs font-semibold text-white-80 uppercase">{{ $module['title'] }}</div>
-                    <ul class="mt-1 space-y-1">
-                        @foreach ($module['items'] as $item)
-                            <li>
-                                <a href="{{ route($item['route']) }}" class="flex items-center p-2 text-white rounded-lg hover-bg-steel steelblue-hover {{ $item['active'] ? 'steelblue-active' : '' }}">
-                                    <span class="w-5 h-5 inline-flex justify-center items-center "><i class="{{ $item['icon'] }} text-white/80"></i></span>
-                                    <span class="ms-3">{{ $item['name'] }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <a href="{{ route('estudiante.dashboard') }}" class="sidebar-item {{ request()->routeIs('estudiante.dashboard') ? 'active' : '' }}">
+                        <span class="sidebar-icon"><i class="fa-solid fa-house"></i></span>
+                        <span>Principal</span>
+                    </a>
                 </li>
-            @endforeach
-        </ul>
+                
+                <div class="sidebar-divider"></div>
+                
+                @foreach ($modules as $module)
+                    <li>
+                        <a href="{{ route($module['route']) }}" class="sidebar-item {{ $module['active'] ? 'active' : '' }}">
+                            <span class="sidebar-icon"><i class="{{ $module['icon'] }}"></i></span>
+                            <span>{{ $module['name'] }}</span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </nav>
     </div>
 </aside>

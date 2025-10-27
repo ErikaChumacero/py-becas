@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ErrorHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -9,27 +10,31 @@ class PostulacionController extends Controller
 {
     public function index()
     {
-        $rows = DB::select(<<<SQL
-            SELECT 
-                p.idpostulacion,
-                p.fechapostulacion,
-                p.estado,
-                p.idconvocatoria,
-                p.idcarrera,
-                p.ci,
-                p.idsemestre,
-                (per.nombre + ' ' + per.apellido) AS estudiante,
-                c.nombre AS carrera,
-                cv.titulo AS convocatoria,
-                s.descripcion AS semestre
-            FROM POSTULACION p
-            INNER JOIN PERSONA per ON per.ci = p.ci
-            INNER JOIN CARRERA c ON c.idcarrera = p.idcarrera
-            INNER JOIN CONVOCATORIA cv ON cv.idconvocatoria = p.idconvocatoria
-            INNER JOIN SEMESTRE s ON s.idsemestre = p.idsemestre
-            ORDER BY p.fechapostulacion DESC, p.idpostulacion DESC
-        SQL);
-        return view('admin.postulacion.index', compact('rows'));
+        try {
+            $rows = DB::select(<<<SQL
+                SELECT 
+                    p.idpostulacion,
+                    p.fechapostulacion,
+                    p.estado,
+                    p.idconvocatoria,
+                    p.idcarrera,
+                    p.ci,
+                    p.idsemestre,
+                    (per.nombre + ' ' + per.apellido) AS estudiante,
+                    c.nombre AS carrera,
+                    cv.titulo AS convocatoria,
+                    (s.periodo + '/' + CAST(s.año AS VARCHAR)) AS semestre
+                FROM POSTULACION p
+                INNER JOIN PERSONA per ON per.ci = p.ci
+                INNER JOIN CARRERA c ON c.idcarrera = p.idcarrera
+                INNER JOIN CONVOCATORIA cv ON cv.idconvocatoria = p.idconvocatoria
+                INNER JOIN SEMESTRE s ON s.idsemestre = p.idsemestre
+                ORDER BY p.fechapostulacion DESC, p.idpostulacion DESC
+            SQL);
+            return view('admin.postulacion.index', compact('rows'));
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Error al cargar las postulaciones. Por favor, contacte al administrador.']);
+        }
     }
 
     public function create()
@@ -62,7 +67,7 @@ class PostulacionController extends Controller
             ]);
         } catch (\Throwable $e) {
             return back()->withErrors([
-                'general' => $e->getMessage(),
+                'general' => ErrorHelper::cleanSqlError($e->getMessage()),
             ])->withInput();
         }
 

@@ -68,12 +68,21 @@ class StudentDocumentoController extends Controller
         $owner = DB::selectOne('SELECT ci FROM POSTULACION WHERE idpostulacion = ?', [$data['idpostulacion']]);
         if (!$owner || $owner->ci !== $ci) { abort(403); }
 
+        // Verificar que no exista ya un documento para este requisito en esta postulación
+        $existente = DB::selectOne(
+            'SELECT iddocumento FROM DOCUMENTO WHERE idpostulacion = ? AND idrequisito = ?',
+            [$data['idpostulacion'], $data['idrequisito']]
+        );
+        if ($existente) {
+            return back()->withErrors(['general' => 'Ya has subido un documento para este requisito. Si necesitas cambiarlo, edita el documento existente.'])->withInput();
+        }
+
         // Subir archivo al DISCO 'public' y obtener URL pública
         $storedPath = $request->file('archivo')->store('documentos', 'public');
         $publicUrl = Storage::disk('public')->url($storedPath); // /storage/documentos/...
         $validado = '0'; // El estudiante no valida, queda pendiente
 
-        // Firma actual del SP: sin id ni nombrearchivo
+        // Firma del SP: 5 parámetros (tipodocumento, rutaarchivo, validado, idpostulacion, idrequisito)
         DB::statement('EXEC sp_InsertarDocumento ?, ?, ?, ?, ?', [
             $data['tipodocumento'],
             $publicUrl,
@@ -119,18 +128,15 @@ class StudentDocumentoController extends Controller
         $currentDoc = DB::selectOne('SELECT rutaarchivo, validado FROM DOCUMENTO WHERE iddocumento = ?', [$id]);
         $current = $currentDoc;
         $rutaarchivo = $currentDoc ? $currentDoc->rutaarchivo : '';
-        $nombrearchivo = $currentDoc ? basename($rutaarchivo) : 'documento.pdf';
         if ($request->hasFile('archivo')) {
             $storedPath = $request->file('archivo')->store('documentos', 'public');
             $rutaarchivo = Storage::disk('public')->url($storedPath);
-            $nombrearchivo = $request->file('archivo')->getClientOriginalName();
         }
         $validado = $current ? $current->validado : '0';
 
-        DB::statement('EXEC sp_ActualizarDocumento ?, ?, ?, ?, ?, ?, ?', [
+        DB::statement('EXEC sp_ActualizarDocumento ?, ?, ?, ?, ?, ?', [
             $id,
             $data['tipodocumento'],
-            $nombrearchivo,
             $rutaarchivo,
             $validado,
             $data['idpostulacion'],

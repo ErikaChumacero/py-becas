@@ -65,10 +65,23 @@ class PersonaController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $personas = DB::select('SELECT ci, nombre, apellido, telefono, sexo, correo, tipou, tipoa, tipoe, codigo, nroregistro FROM PERSONA ORDER BY nombre, apellido');
-        return view('admin.persona.index', compact('personas'));
+        $tipo = $request->query('tipo', 'todos'); // 'todos', 'estudiantes', 'administradores'
+        
+        $query = 'SELECT ci, nombre, apellido, telefono, sexo, correo, tipou, tipoa, tipoe, codigo, nroregistro FROM PERSONA';
+        
+        // Aplicar filtro según el tipo
+        if ($tipo === 'estudiantes') {
+            $query .= ' WHERE tipoe = \'1\'';
+        } elseif ($tipo === 'administradores') {
+            $query .= ' WHERE tipoa = \'1\'';
+        }
+        
+        $query .= ' ORDER BY nombre, apellido';
+        
+        $personas = DB::select($query);
+        return view('admin.persona.index', compact('personas', 'tipo'));
     }
 
 

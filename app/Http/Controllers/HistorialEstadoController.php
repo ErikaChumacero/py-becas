@@ -50,11 +50,8 @@ class HistorialEstadoController extends Controller
             'fechacambio' => 'required|date',
         ]);
 
-        $next = DB::selectOne('SELECT ISNULL(MAX(idhistorialestado),0)+1 AS nextid FROM HISTORIALESTADO');
-        $idh = $next ? $next->nextid : 1;
-
-        DB::statement('EXEC sp_InsertarHistorialEstado ?, ?, ?, ?, ?', [
-            $idh,
+        // El ID es IDENTITY, no se debe enviar
+        DB::statement('EXEC sp_InsertarHistorialEstado ?, ?, ?, ?', [
             $data['estadoanterior'],
             $data['estadonuevo'],
             $data['fechacambio'],
