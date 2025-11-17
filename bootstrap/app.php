@@ -16,6 +16,16 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('admin')
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
+            
+            Route::middleware('web', 'sqlauth', 'secretaria')
+                ->prefix('secretaria')
+                ->name('secretaria.')
+                ->group(base_path('routes/secretaria.php'));
+            
+            Route::middleware('web', 'sqlauth', 'tutor')
+                ->prefix('tutor')
+                ->name('tutor.')
+                ->group(base_path('routes/tutor.php'));
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -23,6 +33,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'sqlauth' => \App\Http\Middleware\SqlAuth::class,
             'admin' => \App\Http\Middleware\AdminAuth::class,
             'estudiante' => \App\Http\Middleware\EstudianteAuth::class,
+            'secretaria' => \App\Http\Middleware\SecretariaAuth::class,
+            'tutor' => \App\Http\Middleware\TutorAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -9,13 +9,13 @@ class DashboardController extends Controller
 {
     public function admin()
     {
-        // Estadísticas generales para admin
+        // Estadísticas generales para admin del colegio
         $stats = DB::selectOne(<<<SQL
             SELECT 
-                (SELECT COUNT(*) FROM CONVOCATORIA WHERE fechainicio <= GETDATE() AND fechafin >= GETDATE()) AS convocatorias_activas,
-                (SELECT COUNT(*) FROM POSTULACION WHERE estado = '1') AS postulaciones_pendientes,
-                (SELECT COUNT(*) FROM POSTULACION WHERE estado = '2') AS postulaciones_revision,
-                (SELECT COUNT(*) FROM PERSONA WHERE tipoe = '1') AS total_estudiantes
+                (SELECT COUNT(*) FROM gestion WHERE estado = '1') AS gestiones_activas,
+                (SELECT COUNT(*) FROM inscripcion) AS total_inscripciones,
+                (SELECT COUNT(*) FROM persona WHERE tipoe = '1') AS total_estudiantes,
+                (SELECT COUNT(*) FROM persona WHERE tipom = '1') AS total_maestros
         SQL);
 
         return view('admin.dashboard', compact('stats'));
@@ -23,23 +23,23 @@ class DashboardController extends Controller
 
     public function estudiante()
     {
-        // Obtener becas disponibles (con convocatorias activas)
-        $becas = DB::select(<<<SQL
+        $ci = session('usuario.ci');
+        
+        // Obtener información del estudiante
+        $estudiante = DB::selectOne(<<<SQL
             SELECT 
-                tb.idtipobeca,
-                tb.nombre AS nombre_beca,
-                tb.descripcion,
-                COUNT(DISTINCT c.idconvocatoria) AS convocatorias_activas,
-                MIN(c.fechainicio) AS fecha_inicio,
-                MAX(c.fechafin) AS fecha_fin
-            FROM TIPOBECA tb
-            INNER JOIN CONVOCATORIA c ON c.idtipobeca = tb.idtipobeca 
-                AND c.fechainicio <= GETDATE() 
-                AND c.fechafin >= GETDATE()
-            GROUP BY tb.idtipobeca, tb.nombre, tb.descripcion
-            ORDER BY tb.nombre
-        SQL);
+                p.ci,
+                p.nombre,
+                p.apellido,
+                p.codestudiante,
+                (SELECT COUNT(*) FROM inscripcion WHERE ci = p.ci) AS total_inscripciones,
+                (SELECT COUNT(*) FROM mensualidad m 
+                 INNER JOIN inscripcion i ON m.ci = i.ci AND m.idcurso = i.idcurso AND m.idnivel = i.idnivel
+                 WHERE i.ci = p.ci) AS total_mensualidades
+            FROM persona p
+            WHERE p.ci = ?
+        SQL, [$ci]);
 
-        return view('estudiante.dashboard', compact('becas'));
+        return view('estudiante.dashboard', compact('estudiante'));
     }
 }

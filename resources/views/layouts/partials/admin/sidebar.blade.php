@@ -1,14 +1,14 @@
 @php
     $modules = [
         [ 'name' => 'Gestionar Personas', 'icon' => 'fa-solid fa-users', 'route' => 'admin.persona.index', 'active' => request()->routeIs('admin.persona.*') ],
-        [ 'name' => 'Gestionar Carreras', 'icon' => 'fa-solid fa-graduation-cap', 'route' => 'admin.carrera.index', 'active' => request()->routeIs('admin.carrera.*') ],
-        [ 'name' => 'Gestionar Convocatorias', 'icon' => 'fa-solid fa-bullhorn', 'route' => 'admin.convocatoria.index', 'active' => request()->routeIs('admin.convocatoria.*') ],
-        [ 'name' => 'Gestionar Semestres', 'icon' => 'fa-solid fa-calendar-days', 'route' => 'admin.semestre.index', 'active' => request()->routeIs('admin.semestre.*') ],
-        [ 'name' => 'Gestionar Postulaciones', 'icon' => 'fa-solid fa-file-signature', 'route' => 'admin.postulacion.index', 'active' => request()->routeIs('admin.postulacion.*') ],
-        [ 'name' => 'Gestionar Documentos', 'icon' => 'fa-solid fa-folder-open', 'route' => 'admin.documento.index', 'active' => request()->routeIs('admin.documento.*') ],
-        [ 'name' => 'Gestionar Tipos de Beca', 'icon' => 'fa-solid fa-award', 'route' => 'admin.tipobeca.index', 'active' => request()->routeIs('admin.tipobeca.*') ],
-        [ 'name' => 'Gestionar Requisitos', 'icon' => 'fa-solid fa-list-check', 'route' => 'admin.requisito.index', 'active' => request()->routeIs('admin.requisito.*') ],
-        [ 'name' => 'Historial de Estados', 'icon' => 'fa-solid fa-clock-rotate-left', 'route' => 'admin.historial.index', 'active' => request()->routeIs('admin.historial.*') ],
+        [ 'name' => 'Gestionar Gestiones', 'icon' => 'fa-solid fa-calendar-days', 'route' => 'admin.gestion.index', 'active' => request()->routeIs('admin.gestion.*') ],
+        [ 'name' => 'Gestionar Niveles', 'icon' => 'fa-solid fa-layer-group', 'route' => 'admin.nivel.index', 'active' => request()->routeIs('admin.nivel.*') ],
+        [ 'name' => 'Gestionar Materias', 'icon' => 'fa-solid fa-chalkboard', 'route' => 'admin.materia.index', 'active' => request()->routeIs('admin.materia.*') ],
+        [ 'name' => 'Asignar Materias a Maestros', 'icon' => 'fa-solid fa-chalkboard-user', 'route' => 'admin.maestromater.index', 'active' => request()->routeIs('admin.maestromater.*') ],
+        [ 'name' => 'Gestionar Inscripciones', 'icon' => 'fa-solid fa-file-signature', 'route' => 'admin.inscripcion.index', 'active' => request()->routeIs('admin.inscripcion.*') ],
+        [ 'name' => 'Gestionar Becas', 'icon' => 'fa-solid fa-award', 'route' => 'admin.beca.index', 'active' => request()->routeIs('admin.beca.*') ],
+        [ 'name' => 'Detalle de Mensualidades', 'icon' => 'fa-solid fa-file-invoice-dollar', 'route' => 'admin.detallemensualidad.index', 'active' => request()->routeIs('admin.detallemensualidad.*') ],
+        [ 'name' => 'Gestionar Mensualidades', 'icon' => 'fa-solid fa-money-bill', 'route' => 'admin.mensualidad.index', 'active' => request()->routeIs('admin.mensualidad.*') ],
     ];
 @endphp
 
@@ -17,15 +17,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    /* Variables de color modernas */
+    /* Variables de color modernas - Sea Green Theme 🌊 */
     :root {
-        --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-        --sidebar-hover: rgba(59, 130, 246, 0.1);
-        --sidebar-active: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        --sidebar-border: rgba(148, 163, 184, 0.1);
-        --sidebar-text: #e2e8f0;
-        --sidebar-text-muted: #94a3b8;
-        --sidebar-icon: #60a5fa;
+        --sidebar-bg: linear-gradient(180deg, #0d2818 0%, #1a3d2e 100%);
+        --sidebar-hover: rgba(60, 179, 113, 0.15);
+        --sidebar-active: linear-gradient(135deg, #3CB371 0%, #2E8B57 100%);
+        --sidebar-border: rgba(60, 179, 113, 0.15);
+        --sidebar-text: #e8f5e9;
+        --sidebar-text-muted: #81c784;
+        --sidebar-icon: #66bb6a;
     }
     
     /* Tipografía moderna */
@@ -42,8 +42,8 @@
     
     /* Perfil de usuario mejorado */
     .user-profile {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid var(--sidebar-border);
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(134, 239, 172, 0.15);
         border-radius: 12px;
         padding: 16px;
         margin-bottom: 24px;
@@ -52,10 +52,10 @@
     }
     
     .user-profile:hover {
-        background: rgba(30, 41, 59, 0.8);
-        border-color: rgba(148, 163, 184, 0.2);
+        background: rgba(34, 197, 94, 0.12);
+        border-color: rgba(134, 239, 172, 0.25);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
     }
     
     .user-name {
@@ -114,7 +114,7 @@
         background: var(--sidebar-active);
         color: #ffffff;
         font-weight: 600;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 16px rgba(46, 139, 87, 0.4), 0 0 20px rgba(60, 179, 113, 0.2);
     }
     
     .sidebar-item.active::before {
@@ -168,15 +168,15 @@
 </style>
 
 <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full sidebar-gradient border-r border-slate-700/50 sm:translate-x-0 sidebar-font"
+    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full sidebar-gradient border-r border-green-900/30 sm:translate-x-0 sidebar-font"
     aria-label="Sidebar">
     <div class="h-full px-4 pb-4 overflow-y-auto sidebar-scroll">
         @php($u = session('usuario'))
         @if($u)
             <a href="{{ route('admin.perfil.index') }}" class="user-profile block cursor-pointer group">
                 <div class="flex items-center gap-3">
-                    <div class="bg-blue-500/20 rounded-full w-12 h-12 flex items-center justify-center border-2 border-blue-400/30 group-hover:border-blue-400/60 transition-all">
-                        <span class="text-lg font-bold text-blue-300">
+                    <div class="bg-green-200/15 rounded-full w-12 h-12 flex items-center justify-center border-2 border-green-200/30 group-hover:border-green-300/50 transition-all shadow-lg shadow-green-200/10">
+                        <span class="text-lg font-bold text-green-200">
                             {{ strtoupper(substr($u['nombre'] ?? '', 0, 1)) }}{{ strtoupper(substr($u['apellido'] ?? '', 0, 1)) }}
                         </span>
                     </div>
@@ -184,7 +184,7 @@
                         <div class="user-name">{{ $u['nombre'] ?? '' }} {{ $u['apellido'] ?? '' }}</div>
                         <div class="user-email truncate">{{ $u['correo'] ?? '' }}</div>
                     </div>
-                    <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-green-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </div>

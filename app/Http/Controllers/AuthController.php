@@ -9,9 +9,25 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        // Si ya está logueado, ir al dashboard
+        // Si ya está logueado, redirigir según rol
         if (session()->has('usuario')) {
-            return redirect('/admin');
+            $usuario = session('usuario');
+            
+            if (($usuario['tipoa'] ?? '0') === '1') {
+                return redirect('/admin');
+            }
+            if (($usuario['tipos'] ?? '0') === '1') {
+                return redirect('/secretaria');
+            }
+            if (($usuario['tipot'] ?? '0') === '1') {
+                return redirect('/tutor');
+            }
+            if (($usuario['tipoe'] ?? '0') === '1') {
+                return redirect('/estudiante');
+            }
+            
+            // Si tiene sesión pero sin rol válido, cerrar sesión
+            session()->forget('usuario');
         }
         return view('auth.login');
     }
@@ -23,9 +39,8 @@ class AuthController extends Controller
             'contrasena' => 'required|string',
         ]);
 
-        // Autenticación contra tabla PERSONA (columna 'contrasena')
-        // 
-        $row = DB::selectOne('SELECT TOP 1 ci, nombre, apellido, correo, contrasena AS password, tipou, tipoa, tipoe FROM PERSONA WHERE correo = ?', [
+        // Autenticación contra tabla persona (columna 'contrasena')
+        $row = DB::selectOne('SELECT TOP 1 ci, nombre, apellido, correo, contrasena AS password, tipou, tipoa, tipoe, tipot, tipos FROM persona WHERE correo = ?', [
             $validated['correo'],
         ]);
 
@@ -47,21 +62,36 @@ class AuthController extends Controller
             'tipou' => $row->tipou ?? null,
             'tipoa' => $row->tipoa ?? null,
             'tipoe' => $row->tipoe ?? null,
+            'tipot' => $row->tipot ?? null,
+            'tipos' => $row->tipos ?? null,
         ]]);
         $request->session()->regenerate();
 
-        // Redirección por roles: administrador (tipoa) o estudiante (tipoe)
+        // Redirección por roles
         $tipoa = $row->tipoa ?? null;
+        $tipos = $row->tipos ?? null;
         $tipoe = $row->tipoe ?? null;
+        $tipot = $row->tipot ?? null;
+        
         if ($tipoa === '1') {
             return redirect('/admin');
         }
+        
+        if ($tipos === '1') {
+            return redirect('/secretaria');
+        }
+        
+        if ($tipot === '1') {
+            return redirect('/tutor');
+        }
+        
         if ($tipoe === '1') {
             return redirect('/estudiante');
         }
 
-        // Fallback
-        return redirect('/');
+        // Si no tiene ningún rol válido, cerrar sesión y mostrar error
+        $request->session()->forget('usuario');
+        return back()->withErrors(['correo' => 'No tienes permisos para acceder al sistema'])->withInput();
     }
 
     public function logout(Request $request)

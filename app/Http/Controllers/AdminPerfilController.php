@@ -32,8 +32,9 @@ class AdminPerfilController extends Controller
                     sexo,
                     tipou,
                     tipoe,
-                    tipoa
-                FROM PERSONA
+                    tipoa,
+                    tipos
+                FROM persona
                 WHERE ci = ?
             SQL, [$ci]);
 
@@ -65,7 +66,7 @@ class AdminPerfilController extends Controller
         try {
             // Verificar que el correo no esté en uso por otro usuario
             $existe = DB::selectOne(
-                'SELECT ci FROM PERSONA WHERE correo = ? AND ci != ?',
+                'SELECT ci FROM persona WHERE correo = ? AND ci != ?',
                 [$data['correo'], $ci]
             );
 
@@ -75,7 +76,7 @@ class AdminPerfilController extends Controller
 
             // Actualizar correo
             DB::update(
-                'UPDATE PERSONA SET correo = ? WHERE ci = ?',
+                'UPDATE persona SET correo = ? WHERE ci = ?',
                 [$data['correo'], $ci]
             );
 
@@ -110,13 +111,13 @@ class AdminPerfilController extends Controller
 
         try {
             // Verificar contraseña actual
-            $usuario = DB::selectOne('SELECT contrasena FROM PERSONA WHERE ci = ?', [$ci]);
+            $usuario = DB::selectOne('SELECT contrasena FROM persona WHERE ci = ?', [$ci]);
             
             if (!$usuario) {
                 return back()->withErrors(['password_actual' => 'Usuario no encontrado.']);
             }
 
-            // Verificar que la contraseña actual sea correcta (comparación texto plano)
+            // Verificar que la contraseña actual sea correcta
             if ($usuario->contrasena !== $data['password_actual']) {
                 return back()->withErrors(['password_actual' => 'La contraseña actual es incorrecta.']);
             }
@@ -126,15 +127,16 @@ class AdminPerfilController extends Controller
                 return back()->withErrors(['password_nuevo' => 'La nueva contraseña debe ser diferente a la actual.']);
             }
 
-            // Actualizar contraseña en texto plano (sin encriptación)
-            DB::update('UPDATE PERSONA SET contrasena = ? WHERE ci = ?', [
-                $data['password_nuevo'],
-                $ci
+            // Usar procedimiento almacenado para cambiar contraseña
+            DB::statement('EXEC sp_cambiarclaveusuario ?, ?, ?', [
+                $ci,
+                $data['password_actual'],
+                $data['password_nuevo']
             ]);
 
             return back()->with('success_password', '✓ Contraseña actualizada exitosamente. Por seguridad, te recomendamos cerrar sesión e iniciar nuevamente.');
         } catch (\Throwable $e) {
-            return back()->withErrors(['password_actual' => 'Error al cambiar la contraseña. Por favor, contacte al administrador.']);
+            return back()->withErrors(['password_actual' => 'Error al cambiar la contraseña: ' . $e->getMessage()]);
         }
     }
 }

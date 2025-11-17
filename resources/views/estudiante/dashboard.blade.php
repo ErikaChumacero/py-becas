@@ -1,105 +1,120 @@
-<x-student-layout>
+<x-app-layout>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-8 text-white">
-            <h1 class="text-4xl font-bold mb-2">Principal</h1>
-            @php($u = session('usuario'))
-            @if($u)
-                <p class="text-blue-100 text-lg">Bienvenido/a, {{ $u['nombre'] ?? '' }} {{ $u['apellido'] ?? '' }}</p>
-            @else
-                <p class="text-blue-100 text-lg">Sistema de Gestión de Becas</p>
-            @endif
+        <div class="bg-gradient-to-r from-green-600 to-green-800 rounded-lg shadow-lg p-8 text-white">
+            <h1 class="text-4xl font-bold mb-2">Panel de Estudiante</h1>
+            <p class="text-green-100 text-lg">Bienvenido, {{ $estudiante->nombre ?? 'Estudiante' }} {{ $estudiante->apellido ?? '' }}</p>
         </div>
 
-        <!-- Becas Disponibles -->
-        <div>
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Becas Disponibles</h2>
-                <a href="{{ route('estudiante.convocatoria.index') }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-2">
-                    Ver todas las convocatorias
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </a>
+        <!-- Información del Estudiante -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase">Código Estudiante</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-2">{{ $estudiante->codestudiante ?? 'N/A' }}</p>
+                    </div>
+                    <div class="bg-blue-100 rounded-full p-3">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                        </svg>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse($becas as $beca)
-                    <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                        <!-- Header de la tarjeta -->
-                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <h3 class="text-xl font-bold mb-2">{{ $beca->nombre_beca }}</h3>
-                                    <div class="flex items-center gap-2">
-                                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
-                                            {{ $beca->convocatorias_activas }} {{ $beca->convocatorias_activas == 1 ? 'Convocatoria' : 'Convocatorias' }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Contenido de la tarjeta -->
-                        <div class="p-6">
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
-                                {{ $beca->descripcion ?: 'Beca disponible para estudiantes universitarios. Revisa los requisitos y postula ahora.' }}
-                            </p>
-
-                            <!-- Fechas -->
-                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                                <div class="flex items-center justify-between text-sm">
-                                    <div>
-                                        <p class="text-gray-500 text-xs">Inicio</p>
-                                        <p class="font-semibold text-gray-800">{{ \Carbon\Carbon::parse($beca->fecha_inicio)->format('d/m/Y') }}</p>
-                                    </div>
-                                    <div class="text-gray-400">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-gray-500 text-xs">Fin</p>
-                                        <p class="font-semibold text-gray-800">{{ \Carbon\Carbon::parse($beca->fecha_fin)->format('d/m/Y') }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Botón de acción -->
-                            <a href="{{ route('estudiante.postulacion.create') }}" 
-                               class="block w-full text-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform group-hover:scale-105">
-                                Postular Ahora
-                            </a>
-                        </div>
-
-                        <!-- Footer con indicador -->
-                        <div class="bg-blue-50 border-t border-blue-100 px-6 py-3">
-                            <div class="flex items-center gap-2 text-blue-700">
-                                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                                <span class="text-sm font-medium">Convocatoria abierta</span>
-                            </div>
-                        </div>
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase">Inscripciones</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-2">{{ $estudiante->total_inscripciones ?? 0 }}</p>
                     </div>
-                @empty
-                    <div class="col-span-full">
-                        <div class="bg-gray-50 rounded-lg p-12 text-center">
-                            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    <div class="bg-purple-100 rounded-full p-3">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase">Mensualidades</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-2">{{ $estudiante->total_mensualidades ?? 0 }}</p>
+                    </div>
+                    <div class="bg-amber-100 rounded-full p-3">
+                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensaje informativo -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+            <div class="flex items-start">
+                <svg class="w-6 h-6 text-blue-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2">Panel de Estudiante</h3>
+                    <p class="text-blue-700">
+                        Este es tu panel de estudiante. Aquí podrás ver tu información académica, inscripciones, mensualidades y más.
+                    </p>
+                    <p class="text-blue-600 text-sm mt-2">
+                        <strong>Nota:</strong> Los módulos adicionales están en desarrollo.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accesos Rápidos (Deshabilitados temporalmente) -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Accesos Rápidos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-300 opacity-50 cursor-not-allowed">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-gray-100 rounded-full p-3">
+                            <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            <h3 class="text-lg font-semibold text-gray-700 mb-2">No hay becas disponibles en este momento</h3>
-                            <p class="text-gray-500 mb-4">Las convocatorias aparecerán aquí cuando estén activas</p>
-                            <a href="{{ route('estudiante.convocatoria.index') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
-                                Ver Historial de Convocatorias
-                            </a>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Mis Inscripciones</h3>
+                            <p class="text-sm text-gray-500">Próximamente</p>
                         </div>
                     </div>
-                @endforelse
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-300 opacity-50 cursor-not-allowed">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-gray-100 rounded-full p-3">
+                            <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Mis Pagos</h3>
+                            <p class="text-sm text-gray-500">Próximamente</p>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{{ route('estudiante.perfil.index') }}" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-green-100 rounded-full p-3">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Mi Perfil</h3>
+                            <p class="text-sm text-gray-500">Ver y editar</p>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
-</x-student-layout>
+</x-app-layout>
