@@ -1,5 +1,8 @@
 <x-app-layout>
-    <div class="space-y-6">
+    <div class="space-y-6 pt-8">
+        <!-- Línea de separación del header -->
+        <div class="border-t-2 border-gray-200 mb-4"></div>
+        
         <!-- Header -->
         <div class="bg-gradient-to-r from-green-600 to-green-800 rounded-lg shadow-lg p-8 text-white">
             <h1 class="text-4xl font-bold mb-2">Panel de Estudiante</h1>

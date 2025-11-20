@@ -1,5 +1,8 @@
 <x-secretaria-layout>
-    <div class="space-y-8">
+    <div class="space-y-8 pt-8">
+        <!-- Línea de separación del header -->
+        <div class="border-t-2 border-gray-200 mb-4"></div>
+        
         <!-- Header -->
         <div class="bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl shadow-lg p-8 text-white">
             <div class="flex items-center justify-between">

@@ -1,12 +1,12 @@
 -- CREACION DE LA DB
 CREATE DATABASE COLEGIO;
-
+GO
 -- ELIMINAR BASE DE DATOS
 -- DROP DATABASE COLEGIO;
 
 -- USO DE LA BD
 USE COLEGIO;
-
+GO
 -- CREACION DE TABLAS
 -- Tabla: persona
 Create table persona
@@ -27,7 +27,7 @@ tipos char(1) not null,
 codestudiante varchar(10) null,
 codmaestro varchar(10) null
 );
-
+GO
 -- Tabla: gestion
 create table gestion
   ( idgestion integer Identity(1,1) primary key,
@@ -37,13 +37,13 @@ create table gestion
   fechacierre date not null,
   estado char(1) not null
   );
-
+GO
 -- Tabla: nivel
 create table nivel
   ( idnivel integer Identity(1,1) primary key,
   descripcion varchar(100) not null
   );
-
+GO
 -- Tabla: curso
 create table curso
   ( idcurso integer Identity(1,1),
@@ -51,7 +51,7 @@ create table curso
   descripcion varchar(100) not null,
   primary key(idcurso, idnivel)
   );
-
+GO
 -- Tabla: materia
 create table materia
   ( idmateria integer Identity(1,1) PRIMARY KEY,
@@ -60,7 +60,7 @@ create table materia
   idcurso integer not null,
   idnivel integer not null
   );
-
+GO
 -- Tabla: maestromater
 create table maestromater
   ( ci varchar(10) not null,
@@ -73,7 +73,7 @@ create table maestromater
   asesor char(1) not null,
   primary key(ci, idmateria)
   );
-
+GO
 -- Tabla: beca
 create table beca
   ( codbeca integer Identity(1,1) primary key,
@@ -81,7 +81,7 @@ create table beca
   tipobeca char(1) not null,
   porcentaje integer not null
   );
-
+GO
 -- Tabla: inscripcion
 create table inscripcion
   ( ci varchar(10) not null,
@@ -94,7 +94,7 @@ create table inscripcion
   codbeca integer null,
   primary key(ci, idcurso, idnivel)
   );
-
+GO
 -- Tabla: detallemensualidad
 create table detallemensualidad
   ( iddetallemensualidad integer Identity(1,1) primary key,
@@ -105,9 +105,12 @@ create table detallemensualidad
   nodescuento char(1) not null,
   descuento integer not null,
   cantidadmesualidades integer not null,
-  idgestion integer not null
+  idgestion integer not null,
+  idnivel integer not null
   );
+GO
 
+GO
 -- Tabla: mensualidad
 create table mensualidad
   ( idmensualidad integer Identity(1,1) primary key,
@@ -119,3 +122,4 @@ create table mensualidad
   idcurso integer not null,
   idnivel integer not null
   );
+  GO

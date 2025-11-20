@@ -1,29 +1,5 @@
 <x-admin-layout>
-    <div class="max-w-7xl mx-auto space-y-6">
-        <!-- Header con gradiente -->
-        <div class="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl shadow-lg p-8 text-white">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="bg-white/20 backdrop-blur-sm rounded-full p-4">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-3xl font-bold">Gestión de Personas</h1>
-                        <p class="text-green-100 mt-1">Administra estudiantes, maestros, tutores y administradores</p>
-                    </div>
-                </div>
-                <a href="{{ route('admin.persona.create') }}" 
-                   class="inline-flex items-center gap-2 bg-white text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Agregar Persona
-                </a>
-            </div>
-        </div>
-
+    <div class="w-full space-y-6">
         <!-- Mensajes de estado -->
         @if (session('success'))
             <div class="bg-teal-50 border-l-4 border-teal-500 p-4 rounded-r-lg shadow-sm">
@@ -66,9 +42,9 @@
         @endif
 
         <!-- Filtros y Búsqueda -->
-        <div class="bg-white rounded-xl shadow-md p-6 space-y-4">
-            <!-- Barra de búsqueda -->
-            <form method="GET" action="{{ route('admin.persona.index') }}" class="flex gap-3">
+        <div class="bg-green-100 rounded-xl shadow-md p-6 space-y-4">
+            <!-- Barra de búsqueda con botón de registrar -->
+            <form id="searchForm" method="GET" action="{{ route('admin.persona.index') }}" class="flex gap-3">
                 <input type="hidden" name="tipo" value="{{ $tipo }}">
                 <div class="relative flex-1">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -77,6 +53,7 @@
                         </svg>
                     </div>
                     <input 
+                        id="searchInput"
                         type="text" 
                         name="buscar" 
                         value="{{ $buscar }}"
@@ -84,12 +61,6 @@
                         class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
                     >
                 </div>
-                <button type="submit" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    Buscar
-                </button>
                 @if($buscar)
                     <a href="{{ route('admin.persona.index', ['tipo' => $tipo]) }}" class="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,40 +69,63 @@
                         Limpiar
                     </a>
                 @endif
+                <a href="{{ route('admin.persona.create') }}" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Registrar
+                </a>
             </form>
 
-            <!-- Filtros por tipo -->
+            <!-- Script para búsqueda automática -->
+            <script>
+                let searchTimeout;
+                const searchInput = document.getElementById('searchInput');
+                const searchForm = document.getElementById('searchForm');
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function() {
+                        // Limpiar timeout anterior
+                        clearTimeout(searchTimeout);
+
+                        // Esperar 500ms después de que el usuario deje de escribir
+                        searchTimeout = setTimeout(function() {
+                            // Si hay texto, enviar el formulario automáticamente
+                            if (searchInput.value.trim().length > 0) {
+                                searchForm.submit();
+                            }
+                        }, 500);
+                    });
+
+                    // También permitir búsqueda al presionar Enter
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            clearTimeout(searchTimeout);
+                            searchForm.submit();
+                        }
+                    });
+                }
+            </script>
+
+            <!-- Filtros por tipo con Select -->
             <div class="flex flex-wrap items-center gap-3">
-                <span class="text-gray-700 font-semibold flex items-center gap-2">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                    </svg>
-                    Filtrar por:
-                </span>
-                <a href="{{ route('admin.persona.index', ['tipo' => 'todos', 'buscar' => $buscar]) }}" 
-                   class="px-4 py-2 rounded-lg transition-all duration-200 {{ $tipo === 'todos' ? 'bg-teal-600 text-white shadow-md transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                    Todos
-                </a>
-                <a href="{{ route('admin.persona.index', ['tipo' => 'estudiantes', 'buscar' => $buscar]) }}" 
-                   class="px-4 py-2 rounded-lg transition-all duration-200 {{ $tipo === 'estudiantes' ? 'bg-teal-600 text-white shadow-md transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                    Estudiantes
-                </a>
-                <a href="{{ route('admin.persona.index', ['tipo' => 'maestros', 'buscar' => $buscar]) }}" 
-                   class="px-4 py-2 rounded-lg transition-all duration-200 {{ $tipo === 'maestros' ? 'bg-teal-600 text-white shadow-md transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                    Maestros
-                </a>
-                <a href="{{ route('admin.persona.index', ['tipo' => 'tutores', 'buscar' => $buscar]) }}" 
-                   class="px-4 py-2 rounded-lg transition-all duration-200 {{ $tipo === 'tutores' ? 'bg-teal-600 text-white shadow-md transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                    Tutores
-                </a>
-                <a href="{{ route('admin.persona.index', ['tipo' => 'administradores', 'buscar' => $buscar]) }}" 
-                   class="px-4 py-2 rounded-lg transition-all duration-200 {{ $tipo === 'administradores' ? 'bg-teal-600 text-white shadow-md transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                    Administradores
-                </a>
-                <a href="{{ route('admin.persona.index', ['tipo' => 'secretarias', 'buscar' => $buscar]) }}" 
-                   class="px-4 py-2 rounded-lg transition-all duration-200 {{ $tipo === 'secretarias' ? 'bg-cyan-600 text-white shadow-md transform scale-105' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-                    Secretarías
-                </a>
+                <form method="GET" action="{{ route('admin.persona.index') }}" class="flex items-center gap-3">
+                    <input type="hidden" name="buscar" value="{{ $buscar }}">
+                    <label for="tipo-filter" class="text-gray-700 font-semibold flex items-center gap-2">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                        </svg>
+                        Filtrar por:
+                    </label>
+                    <select name="tipo" id="tipo-filter" onchange="this.form.submit()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all bg-white text-gray-700 font-medium cursor-pointer">
+                        <option value="todos" {{ $tipo === 'todos' ? 'selected' : '' }}>Todos</option>
+                        <option value="estudiantes" {{ $tipo === 'estudiantes' ? 'selected' : '' }}>Estudiantes</option>
+                        <option value="maestros" {{ $tipo === 'maestros' ? 'selected' : '' }}>Maestros</option>
+                        <option value="tutores" {{ $tipo === 'tutores' ? 'selected' : '' }}>Tutores</option>
+                        <option value="administradores" {{ $tipo === 'administradores' ? 'selected' : '' }}>Administradores</option>
+                        <option value="secretarias" {{ $tipo === 'secretarias' ? 'selected' : '' }}>Secretarías</option>
+                    </select>
+                </form>
                 <span class="ml-auto text-sm bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg font-medium">
                     Total: <strong>{{ $pagination['total'] }}</strong> {{ $tipo === 'todos' ? 'personas' : ($tipo === 'estudiantes' ? 'estudiantes' : ($tipo === 'administradores' ? 'administradores' : ($tipo === 'secretarias' ? 'secretarías' : $tipo))) }}
                 </span>
@@ -200,7 +194,9 @@
                                     <div class="text-sm text-gray-700">{{ $persona->telefono }}</div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="text-sm text-gray-700">{{ $persona->correo }}</div>
+                                    <div class="text-sm text-gray-700 truncate max-w-[120px]" title="{{ $persona->correo }}">
+                                        {{ $persona->correo }}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex gap-1 flex-wrap">

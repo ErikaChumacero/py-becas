@@ -19,8 +19,8 @@
 <body class="font-sans antialiased bg-white text-gray-900">
     @include('layouts.partials.student.navigation')
     @include('layouts.partials.student.sidebar')
-    <div class="p-4 sm:ml-64">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg mt-14">
+    <div class="p-4 sm:ml-64 pt-20">
+        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg">
             {{ $slot }}
         </div>
     </div>

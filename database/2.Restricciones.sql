@@ -8,7 +8,7 @@ ALTER TABLE curso
 ADD CONSTRAINT fk_curso_nivel
 FOREIGN KEY (idnivel) REFERENCES nivel(idnivel)
 ON UPDATE CASCADE;
-
+GO
 -- Relación materia ? curso
 ALTER TABLE materia
 ADD CONSTRAINT fk_materia_curso
@@ -66,6 +66,11 @@ ADD CONSTRAINT fk_detallemensualidad_gestion
 FOREIGN KEY (idgestion) REFERENCES gestion(idgestion)  
 ON UPDATE CASCADE;
 
+ALTER TABLE detallemensualidad
+ADD CONSTRAINT fk_detallemensualidad_nivel
+FOREIGN KEY (idnivel) REFERENCES nivel(idnivel)  
+ON UPDATE CASCADE;
+
 -- Relación maestromater ? materia
 ALTER TABLE maestromater
 ADD CONSTRAINT fk_maestromater_materia
@@ -100,7 +105,7 @@ ALTER TABLE persona
 ADD CONSTRAINT ch_persona_tipou
 CHECK (tipou IN (1,0));
 
-ALTER TABLE persona
+ALTER TABLE personas
 ADD CONSTRAINT ch_persona_tipoe
 CHECK (tipoe IN (1,0));
 

@@ -1,5 +1,5 @@
 <x-secretaria-layout>
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="space-y-6 w-full">
         <!-- Header con gradiente -->
         <div class="bg-gradient-to-r from-green-600 to-teal-600 rounded-xl shadow-lg p-8 text-white">
             <div class="flex items-center justify-between">
@@ -66,9 +66,9 @@
         @endif
 
         <!-- Filtros y Búsqueda -->
-        <div class="bg-white rounded-xl shadow-md p-6 space-y-4">
+        <div class="bg-green-100 rounded-xl shadow-md p-6 space-y-4">
             <!-- Barra de búsqueda -->
-            <form method="GET" action="{{ route('secretaria.persona.index') }}" class="flex gap-3">
+            <form id="searchForm" method="GET" action="{{ route('secretaria.persona.index') }}" class="flex gap-3">
                 <input type="hidden" name="tipo" value="{{ $tipo }}">
                 <div class="relative flex-1">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -77,6 +77,7 @@
                         </svg>
                     </div>
                     <input 
+                        id="searchInput"
                         type="text" 
                         name="buscar" 
                         value="{{ $buscar }}"
@@ -84,12 +85,6 @@
                         class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
                     >
                 </div>
-                <button type="submit" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    Buscar
-                </button>
                 @if($buscar)
                     <a href="{{ route('secretaria.persona.index', ['tipo' => $tipo]) }}" class="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,6 +94,36 @@
                     </a>
                 @endif
             </form>
+
+            <!-- Script para búsqueda automática -->
+            <script>
+                let searchTimeout;
+                const searchInput = document.getElementById('searchInput');
+                const searchForm = document.getElementById('searchForm');
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function() {
+                        // Limpiar timeout anterior
+                        clearTimeout(searchTimeout);
+
+                        // Esperar 500ms después de que el usuario deje de escribir
+                        searchTimeout = setTimeout(function() {
+                            // Si hay texto, enviar el formulario automáticamente
+                            if (searchInput.value.trim().length > 0) {
+                                searchForm.submit();
+                            }
+                        }, 500);
+                    });
+
+                    // También permitir búsqueda al presionar Enter
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            clearTimeout(searchTimeout);
+                            searchForm.submit();
+                        }
+                    });
+                }
+            </script>
 
             <!-- Filtros por tipo -->
             <div class="flex flex-wrap items-center gap-3">
@@ -189,7 +214,9 @@
                                     <div class="text-sm text-gray-700">{{ $persona->telefono }}</div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="text-sm text-gray-700">{{ $persona->correo }}</div>
+                                    <div class="text-sm text-gray-700 truncate max-w-[120px]" title="{{ $persona->correo }}">
+                                        {{ $persona->correo }}
+                                    </div>
                                 </td>
                                 @if($tipo === 'estudiantes')
                                     <td class="px-6 py-4 whitespace-nowrap">

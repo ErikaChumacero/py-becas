@@ -1,4 +1,4 @@
-<nav class="fixed top-0 z-50 w-full bg-blue-900 border-b border-blue-900 text-white">
+<nav id="header-nav" class="fixed top-0 left-56 right-0 z-30 bg-blue-900 border-b border-blue-900 text-white h-16 transition-all duration-300">
   <div class="px-3 py-3 lg:px-5 lg:pl-3 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-white/90 rounded-lg sm:hidden hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300">

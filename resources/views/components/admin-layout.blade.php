@@ -16,13 +16,16 @@
         });
     </script>
 </head>
-<body class="font-sans antialiased bg-white text-gray-900">
+<body class="font-sans antialiased bg-gray-50 text-gray-900">
     @include('layouts.partials.admin.navigation')
     @include('layouts.partials.admin.sidebar')
-    <div class="p-4 sm:ml-64">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg mt-14">
+    
+    <div class="pt-16 w-full">
+        <div class="pt-6 pr-6 pb-6 pl-6 w-full">
             {{ $slot }}
         </div>
     </div>
+    
+    @include('layouts.partials.admin.sidebar-script')
 </body>
 </html>
